@@ -1,23 +1,22 @@
 import random
-import matplotlib
-# Force matplotlib to not use any Xwindows backend.
-matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 import Orange
 import sys, os
 from bottle import route, request, run, static_file
 
+table=Orange.data.Table("iris")
 
 @route('/upload', method='POST')
 def do_upload():
+    global table
     upload     = request.files.get('upload')
     name, ext = os.path.splitext(upload.filename)
     str = upload.filename
-    upload.save('/home/ubuntu') # appends upload.filename automatically
+    upload.save('/Users/shedimbiprudhvirao/Desktop/Cloud') # appends upload.filename automatically
     table = Orange.data.Table("iris")
     random.seed(42)
     km = Orange.clustering.kmeans.Clustering(table, 3, minscorechange=0, maxiters=10, inner_callback=in_callback)
-    p = download('kmeans-scatter-008')
+    p = download('kmeans-scatter-008.png')
     return p
 
 
@@ -43,11 +42,12 @@ def plot_scatter(table, km, attx, atty, filename="kmeans-scatter", title=None):
     plt.close()
 
 def in_callback(km):
+    global table
     print "Iteration: %d, changes: %d, score: %8.6f" % (km.iteration, km.nchanges, km.score)
     plot_scatter(table, km, "petal width", "petal length", title="Iteration %d" % km.iteration)
 
 def download(filename):
-    return static_file(filename, root='/home/ubuntu')
+    return static_file(filename, root='/Users/shedimbiprudhvirao/Desktop/Cloud')
 
 
-run(host='localhost', port=80, debug=True)
+run(host='localhost', port=8300, debug=True)
