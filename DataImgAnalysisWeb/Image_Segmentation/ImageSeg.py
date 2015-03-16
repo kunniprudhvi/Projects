@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')
 import sys, os
 from bottle import route, request, run
 from scipy import misc
@@ -5,21 +7,20 @@ import time as time
 import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
-from sklearn.feature_extraction.image import grid_to_graph
-from sklearn.cluster import AgglomerativeClustering
+import sklearn
 
 @route('/upload', method='POST')
 def do_upload():
     upload     = request.files.get('upload')
     name, ext = os.path.splitext(upload.filename) 
     str = upload.filename
-    upload.save('/Users/shedimbiprudhvirao/Desktop/Cloud') # appends upload.filename automatically 
+    upload.save('/home/ec2-user', overwrite=True) # appends upload.filename automatically 
     clusterImage(str)
-    return str
+    p = download('output.png')
+    return p
 
 def clusterImage(str):
-    lena = misc.imread(str) 
-    lena = lena[::2, ::2] + lena[1::2, ::2] + lena[::2, 1::2] + lena[1::2, 1::2]
+    lena = misc.imread(str)  
     X = np.reshape(lena, (-1, 1))
 
     connectivity = grid_to_graph(*lena.shape)
@@ -41,11 +42,13 @@ def clusterImage(str):
                     colors=[plt.cm.spectral(l / float(n_clusters)), ])
     plt.xticks(())
     plt.yticks(())
-    plt.savefig('myfiggg')
-    plt.show()
+    plt.savefig('output')
+    
  
     
+def download(filename):
+    return static_file(filename, root='/home/ec2-user/Projects/DataImgAnalysisWeb/Image_Segmentation')
 
 
 
-run(host='localhost', port=8380, debug=True)
+run(host='0.0.0.0', port=80, debug=True)
