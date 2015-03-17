@@ -1,0 +1,20 @@
+application: data2fun
+version: 1
+runtime: python27
+api_version: 1
+threadsafe: yes
+
+handlers:
+- url: /favicon\.ico
+  static_files: favicon.ico
+  upload: favicon\.ico
+
+- url: /kun
+  static_dir: kun
+
+- url: .*
+  script: main.app
+
+libraries:
+- name: webapp2
+  version: latest

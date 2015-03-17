@@ -1,20 +1,21 @@
 import matplotlib
 matplotlib.use('Agg')
 import sys, os
-from bottle import route, request, run
+from bottle import route, request, run, static_file
 from scipy import misc
 import time as time
 import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
-import sklearn
+from sklearn.feature_extraction.image import grid_to_graph
+from sklearn.cluster import AgglomerativeClustering
 
 @route('/upload', method='POST')
 def do_upload():
     upload     = request.files.get('upload')
     name, ext = os.path.splitext(upload.filename) 
     str = upload.filename
-    upload.save('/home/ec2-user', overwrite=True) # appends upload.filename automatically 
+    upload.save('/Users/shedimbiprudhvirao/Documents/Projects/DataImgAnalysisWeb/Image_Segmentation', overwrite=True) # appends upload.filename automatically 
     clusterImage(str)
     p = download('output.png')
     return p
@@ -47,8 +48,8 @@ def clusterImage(str):
  
     
 def download(filename):
-    return static_file(filename, root='/home/ec2-user/Projects/DataImgAnalysisWeb/Image_Segmentation')
+    return static_file(filename, root='/Users/shedimbiprudhvirao/Documents/Projects/DataImgAnalysisWeb/Image_Segmentation')
 
 
 
-run(host='0.0.0.0', port=80, debug=True)
+run(host='localhost', port=8090, debug=True)
